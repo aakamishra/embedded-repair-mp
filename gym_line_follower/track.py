@@ -222,7 +222,7 @@ class Track:
         return cls(points, *args, **kwargs)
     
     def _render(self, w=3., h=2., ppm=1500, line_thickness=0.015, save=None, line_color="black",
-                background="white", line_opacity=0.8, dashed=False):
+                background="mars", line_opacity=0.8, dashed=False):
         """
         Render track using open-cv
         :param w: canvas width in meters
@@ -257,6 +257,10 @@ class Track:
                 bg = cv2.imread(os.path.join(root_dir, "track_textures", "checkerboard.jpg"))
             elif background == "white":
                 background_bgr = (255, 255, 255)
+            elif background == "red":
+                background_bgr = (156, 46, 53)
+            elif background == "mars":
+                bg = cv2.imread(os.path.join(root_dir, "track_textures", "mars.jpg"))
             elif background == "gray":
                 background_bgr = (150, 150, 150)
             else:

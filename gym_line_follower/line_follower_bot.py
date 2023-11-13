@@ -8,8 +8,12 @@ from .line_interpolation import sort_points, interpolate_points
 from .dc_motor import DCMotor
 from .track import Track
 
-JOINT_INDICES = {"left_wheel": 1,
-                 "right_wheel": 2}
+JOINT_INDICES = {"front_left_wheel": 1,
+                 "front_right_wheel": 2,
+                 "middle_left_wheel": 3,
+                 "middle_right_wheel": 4,
+                 "back_left_wheel": 5,
+                 "back_right_wheel": 6}
 MOTOR_DIRECTIONS = {"left": -1,
                     "right": -1}
 
@@ -58,8 +62,10 @@ class LineFollowerBot:
 
         self.volts = 0.
 
-        self.left_motor: DCMotor = None
-        self.right_motor: DCMotor = None
+        self.front_left_motor: DCMotor = None
+        self.front_right_motor: DCMotor = None
+        self.back_left_motor: DCMotor = None
+        self.back_right_motor: DCMotor = None
 
         self.obsv_type = obsv_type.lower()
         if self.obsv_type not in self.SUPPORTED_OBSV_TYPE:
@@ -102,15 +108,27 @@ class LineFollowerBot:
         nom_volt = self.config["motor_nominal_voltage"]
         no_load_speed = self.config["motor_no_load_speed"]
         stall_torque = self.config["motor_stall_torque"]
-        self.left_motor = DCMotor(nom_volt, no_load_speed, stall_torque)
-        self.right_motor = DCMotor(nom_volt, no_load_speed, stall_torque)
+        self.front_left_motor = DCMotor(nom_volt, no_load_speed, stall_torque)
+        self.front_right_motor = DCMotor(nom_volt, no_load_speed, stall_torque)
+        self.middle_left_motor = DCMotor(nom_volt, no_load_speed, stall_torque)
+        self.middle_right_motor = DCMotor(nom_volt, no_load_speed, stall_torque)
+        self.back_left_motor = DCMotor(nom_volt, no_load_speed, stall_torque)
+        self.back_right_motor = DCMotor(nom_volt, no_load_speed, stall_torque)
 
         self.volts = self.config["volts"]
 
         # Disable joint motors prior to using torque control
-        self.pb_client.setJointMotorControl2(bodyIndex=self.bot, jointIndex=JOINT_INDICES["left_wheel"],
+        self.pb_client.setJointMotorControl2(bodyIndex=self.bot, jointIndex=JOINT_INDICES["front_left_wheel"],
                                              controlMode=self.pb_client.VELOCITY_CONTROL, force=0)
-        self.pb_client.setJointMotorControl2(bodyIndex=self.bot, jointIndex=JOINT_INDICES["right_wheel"],
+        self.pb_client.setJointMotorControl2(bodyIndex=self.bot, jointIndex=JOINT_INDICES["front_right_wheel"],
+                                             controlMode=self.pb_client.VELOCITY_CONTROL, force=0)
+        self.pb_client.setJointMotorControl2(bodyIndex=self.bot, jointIndex=JOINT_INDICES["middle_left_wheel"],
+                                             controlMode=self.pb_client.VELOCITY_CONTROL, force=0)
+        self.pb_client.setJointMotorControl2(bodyIndex=self.bot, jointIndex=JOINT_INDICES["middle_right_wheel"],
+                                             controlMode=self.pb_client.VELOCITY_CONTROL, force=0)
+        self.pb_client.setJointMotorControl2(bodyIndex=self.bot, jointIndex=JOINT_INDICES["back_left_wheel"],
+                                             controlMode=self.pb_client.VELOCITY_CONTROL, force=0)
+        self.pb_client.setJointMotorControl2(bodyIndex=self.bot, jointIndex=JOINT_INDICES["back_right_wheel"],
                                              controlMode=self.pb_client.VELOCITY_CONTROL, force=0)
 
     def get_position(self):
@@ -138,9 +156,13 @@ class LineFollowerBot:
         return (vx, vy), wz
 
     def _get_wheel_velocity(self):
-        l_pos, l_vel, l_react, l_torque = self.pb_client.getJointState(self.bot, JOINT_INDICES["left_wheel"])
-        r_pos, r_vel, r_react, r_torque = self.pb_client.getJointState(self.bot, JOINT_INDICES["right_wheel"])
-        return l_vel, r_vel
+        fl_pos, fl_vel, fl_react, fl_torque = self.pb_client.getJointState(self.bot, JOINT_INDICES["front_left_wheel"])
+        fr_pos, fr_vel, fr_react, fr_torque = self.pb_client.getJointState(self.bot, JOINT_INDICES["front_right_wheel"])
+        ml_pos, ml_vel, ml_react, ml_torque = self.pb_client.getJointState(self.bot, JOINT_INDICES["middle_left_wheel"])
+        mr_pos, mr_vel, mr_react, mr_torque = self.pb_client.getJointState(self.bot, JOINT_INDICES["middle_right_wheel"])
+        bl_pos, bl_vel, bl_react, bl_torque = self.pb_client.getJointState(self.bot, JOINT_INDICES["back_left_wheel"])
+        br_pos, br_vel, br_react, br_torque = self.pb_client.getJointState(self.bot, JOINT_INDICES["back_right_wheel"])
+        return fl_vel, fr_vel, ml_vel, mr_vel, bl_vel, br_vel
 
     def step(self, track: Track):
         """
@@ -190,33 +212,57 @@ class LineFollowerBot:
         elif self.obsv_type == "camera":
             return self.get_pov_image()
 
-    def _set_wheel_torque(self, l_torque, r_torque):
+    def _set_wheel_torque(self, fl_torque, fr_torque, ml_torque, mr_torque, bl_torque, br_torque):
         """
         Apply torque to simulated wheels.
         :param l_torque: left wheel torque in Nm
         :param r_torque: right wheel torque in Nm
         """
-        l_torque *= MOTOR_DIRECTIONS["left"]
-        r_torque *= MOTOR_DIRECTIONS["right"]
+        fl_torque *= MOTOR_DIRECTIONS["left"]
+        fr_torque *= MOTOR_DIRECTIONS["right"]
+        bl_torque *= MOTOR_DIRECTIONS["left"]
+        br_torque *= MOTOR_DIRECTIONS["right"]
+        ml_torque *= MOTOR_DIRECTIONS["left"]
+        mr_torque *= MOTOR_DIRECTIONS["right"]
         self.pb_client.setJointMotorControl2(self.bot,
-                                             jointIndex=JOINT_INDICES["left_wheel"],
+                                             jointIndex=JOINT_INDICES["front_left_wheel"],
                                              controlMode=self.pb_client.TORQUE_CONTROL,
-                                             force=l_torque)
+                                             force=fl_torque)
         self.pb_client.setJointMotorControl2(self.bot,
-                                             jointIndex=JOINT_INDICES["right_wheel"],
+                                             jointIndex=JOINT_INDICES["front_right_wheel"],
                                              controlMode=self.pb_client.TORQUE_CONTROL,
-                                             force=r_torque)
+                                             force=fr_torque)
+        self.pb_client.setJointMotorControl2(self.bot,
+                                             jointIndex=JOINT_INDICES["middle_left_wheel"],
+                                             controlMode=self.pb_client.TORQUE_CONTROL,
+                                             force=ml_torque)
+        self.pb_client.setJointMotorControl2(self.bot,
+                                             jointIndex=JOINT_INDICES["middle_right_wheel"],
+                                             controlMode=self.pb_client.TORQUE_CONTROL,
+                                             force=mr_torque)
+        self.pb_client.setJointMotorControl2(self.bot,
+                                             jointIndex=JOINT_INDICES["back_left_wheel"],
+                                             controlMode=self.pb_client.TORQUE_CONTROL,
+                                             force=bl_torque)
+        self.pb_client.setJointMotorControl2(self.bot,
+                                             jointIndex=JOINT_INDICES["back_right_wheel"],
+                                             controlMode=self.pb_client.TORQUE_CONTROL,
+                                             force=br_torque)
 
-    def _power_to_volts(self, l_pow, r_pow):
+    def _power_to_volts(self, fl_pow, fr_pow, ml_pow, mr_pow, bl_pow, br_pow):
         """
         Convert power to volts
         :param l_pow:
         :param r_pow:
         :return:
         """
-        l_pow = np.clip(l_pow, -1., 1.)
-        r_pow = np.clip(r_pow, -1., 1.)
-        return l_pow * self.volts, r_pow * self.volts
+        fl_pow = np.clip(fl_pow, -1., 1.)
+        fr_pow = np.clip(fr_pow, -1., 1.)
+        ml_pow = np.clip(bl_pow, -1., 1.)
+        mr_pow = np.clip(br_pow, -1., 1.)
+        bl_pow = np.clip(bl_pow, -1., 1.)
+        br_pow = np.clip(br_pow, -1., 1.)
+        return fl_pow * self.volts, fr_pow * self.volts,  ml_pow * self.volts, mr_pow * self.volts, bl_pow * self.volts, br_pow * self.volts
 
     def apply_action(self, action):
         """
@@ -224,13 +270,21 @@ class LineFollowerBot:
         :param action:
         :return: None
         """
-        l_volts, r_volts = self._power_to_volts(*action)
-        l_vel, r_vel = self._get_wheel_velocity()
-        l_vel *= MOTOR_DIRECTIONS["left"]
-        r_vel *= MOTOR_DIRECTIONS["right"]
-        l_torque = self.left_motor.get_torque(l_volts, l_vel)
-        r_torque = self.right_motor.get_torque(r_volts, r_vel)
-        self._set_wheel_torque(l_torque, r_torque)
+        fl_volts, fr_volts, ml_volts, mr_volts, bl_volts, br_volts = self._power_to_volts(*action)
+        fl_vel, fr_vel, ml_vel, mr_vel, bl_vel, br_vel = self._get_wheel_velocity()
+        fl_vel *= MOTOR_DIRECTIONS["left"]
+        fr_vel *= MOTOR_DIRECTIONS["right"]
+        ml_vel *= MOTOR_DIRECTIONS["left"]
+        mr_vel *= MOTOR_DIRECTIONS["right"]
+        bl_vel *= MOTOR_DIRECTIONS["left"]
+        br_vel *= MOTOR_DIRECTIONS["right"]
+        fl_torque = self.front_left_motor.get_torque(fl_volts, fl_vel)
+        bl_torque = self.back_left_motor.get_torque(bl_volts, bl_vel)
+        fr_torque = self.front_right_motor.get_torque(fr_volts, fr_vel)
+        br_torque = self.back_right_motor.get_torque(br_volts, br_vel)
+        ml_torque = self.middle_left_motor.get_torque(ml_volts, ml_vel)
+        mr_torque = self.middle_right_motor.get_torque(mr_volts, mr_vel)
+        self._set_wheel_torque(fl_torque, fr_torque, ml_torque, mr_torque, bl_torque, br_torque)
 
     def get_pov_image(self):
         """

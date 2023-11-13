@@ -77,7 +77,7 @@ class LineFollowerEnv(gym.Env):
         self.track_render_params = track_render_params
         self.preset_track = track
 
-        self.action_space = spaces.Box(low=-1.0, high=1.0, shape=(2,), dtype=np.float32)
+        self.action_space = spaces.Box(low=-1.0, high=1.0, shape=(6,), dtype=np.float32)
 
         if self.obsv_type not in self.SUPPORTED_OBSV_TYPE:
             raise ValueError("Observation type '{}' not supported.".format(self.obsv_type))

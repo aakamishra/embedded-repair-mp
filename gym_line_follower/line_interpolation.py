@@ -1,6 +1,6 @@
 import numpy as np
 from shapely.geometry import LineString
-
+import pdb
 
 def interpolate_points(points, nb_out_points=None, segment_length=None):
     """

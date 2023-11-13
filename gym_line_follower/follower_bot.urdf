@@ -46,7 +46,7 @@
         </inertial>
     </link>
 
-    <link name="left_wheel">
+    <link name="front_left_wheel">
         <visual>
             <geometry>
                 <cylinder length="0.013" radius="0.0145"/>
@@ -70,7 +70,7 @@
         </inertial>
     </link>
 
-    <link name="right_wheel">
+    <link name="back_left_wheel">
         <visual>
             <geometry>
                 <cylinder length="0.013" radius="0.0145"/>
@@ -94,27 +94,99 @@
         </inertial>
     </link>
 
-    <link name="caster">
+    <link name="front_right_wheel">
         <visual>
             <geometry>
-                <sphere radius="0.005"/>
+                <cylinder length="0.013" radius="0.0145"/>
             </geometry>
-            <material name="blue"/>
+            <material name="black"/>
         </visual>
         <collision>
             <geometry>
-                <sphere radius="0.005"/>
+                <cylinder length="0.013" radius="0.0145"/>
             </geometry>
         </collision>
         <contact>
-          <lateral_friction value="0.0"/>
+          <lateral_friction value="0.6"/>
           <rolling_friction value="0.0"/>
           <stiffness value="300000"/>
           <damping value="1000"/>
         </contact>
         <inertial>
-            <mass value="0.001"/>
-            <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+            <mass value="0.01"/>
+            <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="1e-6"/>
+        </inertial>
+    </link>
+
+    <link name="back_right_wheel">
+        <visual>
+            <geometry>
+                <cylinder length="0.013" radius="0.0145"/>
+            </geometry>
+            <material name="black"/>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder length="0.013" radius="0.0145"/>
+            </geometry>
+        </collision>
+        <contact>
+          <lateral_friction value="0.6"/>
+          <rolling_friction value="0.0"/>
+          <stiffness value="300000"/>
+          <damping value="1000"/>
+        </contact>
+        <inertial>
+            <mass value="0.01"/>
+            <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="1e-6"/>
+        </inertial>
+    </link>
+
+       <link name="middle_left_wheel">
+        <visual>
+            <geometry>
+                <cylinder length="0.013" radius="0.0145"/>
+            </geometry>
+            <material name="black"/>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder length="0.013" radius="0.0145"/>
+            </geometry>
+        </collision>
+        <contact>
+          <lateral_friction value="0.6"/>
+          <rolling_friction value="0.0"/>
+          <stiffness value="300000"/>
+          <damping value="1000"/>
+        </contact>
+        <inertial>
+            <mass value="0.01"/>
+            <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="1e-6"/>
+        </inertial>
+    </link>
+
+    <link name="middle_right_wheel">
+        <visual>
+            <geometry>
+                <cylinder length="0.013" radius="0.0145"/>
+            </geometry>
+            <material name="black"/>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder length="0.013" radius="0.0145"/>
+            </geometry>
+        </collision>
+        <contact>
+          <lateral_friction value="0.6"/>
+          <rolling_friction value="0.0"/>
+          <stiffness value="300000"/>
+          <damping value="1000"/>
+        </contact>
+        <inertial>
+            <mass value="0.01"/>
+            <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="1e-6"/>
         </inertial>
     </link>
 
@@ -126,24 +198,47 @@
         <origin rpy="0 0 0" xyz="0.0355 0 0.0175"/>
     </joint>
 
-    <joint name="chassis_to_left_wheel" type="continuous">
+    <joint name="chassis_to_front_left_wheel" type="continuous">
         <parent link="chassis"/>
-        <child link="left_wheel"/>
+        <child link="front_left_wheel"/>
         <origin rpy="1.5708 0 0" xyz="-0.0355 0.0385 -0.003"/>
         <axis xyz="0 0 1"/>
     </joint>
 
-    <joint name="chassis_to_right_wheel" type="continuous">
+    <joint name="chassis_to_front_right_wheel" type="continuous">
         <parent link="chassis"/>
-        <child link="right_wheel"/>
+        <child link="front_right_wheel"/>
         <origin rpy="-1.5708 0 0" xyz="-0.0355 -0.0385 -0.003"/>
         <axis xyz="0 0 -1"/>
     </joint>
 
-    <joint name="chassis_to_caster" type="fixed">
+
+     <joint name="chassis_to_middle_left_wheel" type="continuous">
         <parent link="chassis"/>
-        <child link="caster"/>
-        <origin rpy="0 0 0" xyz="0.04 0 -0.0125"/>
+        <child link="middle_left_wheel"/>
+        <origin rpy="1.5708 0 0" xyz="0 0.042 -0.003"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+
+    <joint name="chassis_to_middle_right_wheel" type="continuous">
+        <parent link="chassis"/>
+        <child link="middle_right_wheel"/>
+        <origin rpy="-1.5708 0 0" xyz="0 -0.042 -0.003"/>
+        <axis xyz="0 0 -1"/>
+    </joint>
+
+    <joint name="chassis_to_back_left_wheel" type="continuous">
+        <parent link="chassis"/>
+        <child link="back_left_wheel"/>
+        <origin rpy="1.5708 0 0" xyz="0.0355 0.0385 -0.003"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+
+    <joint name="chassis_to_back_right_wheel" type="continuous">
+        <parent link="chassis"/>
+        <child link="back_right_wheel"/>
+        <origin rpy="-1.5708 0 0" xyz="0.0355 -0.0385 -0.003"/>
+        <axis xyz="0 0 -1"/>
     </joint>
 
 </robot>

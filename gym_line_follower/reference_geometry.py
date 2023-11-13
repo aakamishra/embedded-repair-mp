@@ -2,6 +2,7 @@ from shapely.geometry import Point, MultiPoint
 from shapely.geometry.polygon import Polygon
 from shapely.affinity import rotate, translate
 import numpy as np
+import pdb
 
 
 class ReferenceGeometry:
@@ -77,6 +78,8 @@ class CameraWindow(ReferenceGeometry):
         visible = multipoint.intersection(self.geometry)
         if return_coords:
             return np.array(visible).reshape((-1, 2))
+            # we had to migrate this due to the update with shapely to shapely multipoint .geom()
+            # return np.array([ np.array((geom.xy[0][0], geom.xy[1][0])) for geom in visible.geoms ])
         else:
             return visible
 
