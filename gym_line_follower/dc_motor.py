@@ -3,13 +3,14 @@ class DCMotor:
     Simple DC motor model.
     """
 
-    def __init__(self, nominal_voltage, no_load_speed, stall_torque):
+    def __init__(self, nominal_voltage, no_load_speed, stall_torque, state=1):
         """
         Create a motor with parameters:
         :param nominal_voltage: [V]
         :param no_load_speed: [rad/s]
         :param stall_torque: [Nm]
         """
+        self.state = state
         self.constant, self.resistance = self.get_motor_parameters(nominal_voltage, no_load_speed, stall_torque)
 
     def get_torque(self, supply_voltage, w):

@@ -61,7 +61,7 @@ def build_agent(env):
 def test(env, path):
     agent = build_agent(env)
     agent.load_weights(path)
-    agent.test(env, nb_episodes=20, visualize=False)
+    agent.test(env, nb_episodes=10, visualize=False)
 
 if __name__ == '__main__':
     env = gym.make("LineFollower-v0")
