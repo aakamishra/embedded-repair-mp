@@ -7,9 +7,10 @@
   "wheel_rolling_friction": 0.0,
   "wheel_stiffness": 3e5,
   "wheel_damping": 1000.0,
-  "motor_nominal_voltage": 6.0,
-  "motor_stall_torque": 0.057,
-  "motor_no_load_speed": 105.0,
+  "motor_nominal_voltage": 12.0, 
+  "motor_stall_current": 85,
+  "motor_stall_torque": 0.49,
+  "motor_no_load_speed": 2021,
   "camera_window_height": 0.160,
   "camera_window_top_width": 0.270,
   "camera_window_bottom_width": 0.120,
@@ -17,5 +18,5 @@
   "track_ref_point_x": 0.112,
   "camera_target_point_x": 0.185,
   "camera_position_point_x": 0.060,
-  "volts": 5.0
+  "volts": 12.0
 }

@@ -111,14 +111,14 @@ class LineFollowerBot:
         self.cam_pos_point.move(xy, yaw)
 
         nom_volt = self.config["motor_nominal_voltage"]
-        no_load_speed = self.config["motor_no_load_speed"]
+        stall_current = self.config["motor_stall_current"]
         stall_torque = self.config["motor_stall_torque"]
-        self.front_left_motor = DCMotor(nom_volt, no_load_speed, stall_torque, state=self.hardware_label[0])
-        self.front_right_motor = DCMotor(nom_volt, no_load_speed, stall_torque, state=self.hardware_label[1])
-        self.middle_left_motor = DCMotor(nom_volt, no_load_speed, stall_torque, state=self.hardware_label[2])
-        self.middle_right_motor = DCMotor(nom_volt, no_load_speed, stall_torque, state=self.hardware_label[3])
-        self.back_left_motor = DCMotor(nom_volt, no_load_speed, stall_torque, state=self.hardware_label[4])
-        self.back_right_motor = DCMotor(nom_volt, no_load_speed, stall_torque, state=self.hardware_label[5])
+        self.front_left_motor = DCMotor(nom_volt, stall_current, stall_torque, state=self.hardware_label[0])
+        self.front_right_motor = DCMotor(nom_volt, stall_current, stall_torque, state=self.hardware_label[1])
+        self.middle_left_motor = DCMotor(nom_volt, stall_current, stall_torque, state=self.hardware_label[2])
+        self.middle_right_motor = DCMotor(nom_volt, stall_current, stall_torque, state=self.hardware_label[3])
+        self.back_left_motor = DCMotor(nom_volt, stall_current, stall_torque, state=self.hardware_label[4])
+        self.back_right_motor = DCMotor(nom_volt, stall_current, stall_torque, state=self.hardware_label[5])
 
         self.volts = self.config["volts"]
 
