@@ -112,14 +112,14 @@ class LineFollowerBot:
 
         nom_volt = self.config["motor_nominal_voltage"]
         stall_current = self.config["motor_stall_current"]
-        stall_torque = self.config["motor_stall_torque"]
+        free_current = self.config["motor_free_current"]
         no_load_speed = self.config["motor_no_load_speed"]
-        self.front_left_motor = DCMotor(nom_volt, no_load_speed, stall_torque, stall_current, state=self.hardware_label[0])
-        self.front_right_motor = DCMotor(nom_volt, no_load_speed, stall_torque, stall_current, state=self.hardware_label[1])
-        self.middle_left_motor = DCMotor(nom_volt, no_load_speed, stall_torque, stall_current, state=self.hardware_label[2])
-        self.middle_right_motor = DCMotor(nom_volt, no_load_speed, stall_torque, stall_current, state=self.hardware_label[3])
-        self.back_left_motor = DCMotor(nom_volt, no_load_speed, stall_torque, stall_current, state=self.hardware_label[4])
-        self.back_right_motor = DCMotor(nom_volt, no_load_speed, stall_torque, stall_current, state=self.hardware_label[5])
+        self.front_left_motor = DCMotor(nom_volt, no_load_speed, free_current, stall_current, state=self.hardware_label[0])
+        self.front_right_motor = DCMotor(nom_volt, no_load_speed, free_current, stall_current, state=self.hardware_label[1])
+        self.middle_left_motor = DCMotor(nom_volt, no_load_speed, free_current, stall_current, state=self.hardware_label[2])
+        self.middle_right_motor = DCMotor(nom_volt, no_load_speed, free_current, stall_current, state=self.hardware_label[3])
+        self.back_left_motor = DCMotor(nom_volt, no_load_speed, free_current, stall_current, state=self.hardware_label[4])
+        self.back_right_motor = DCMotor(nom_volt, no_load_speed, free_current, stall_current, state=self.hardware_label[5])
 
         self.volts = self.config["volts"]
 
@@ -305,12 +305,12 @@ class LineFollowerBot:
         mr_vel *= MOTOR_DIRECTIONS["right"]
         bl_vel *= MOTOR_DIRECTIONS["left"]
         br_vel *= MOTOR_DIRECTIONS["right"]
-        fl_torque = self.front_left_motor.get_torque(fl_volts, fl_vel)
-        bl_torque = self.back_left_motor.get_torque(bl_volts, bl_vel)
-        fr_torque = self.front_right_motor.get_torque(fr_volts, fr_vel)
-        br_torque = self.back_right_motor.get_torque(br_volts, br_vel)
-        ml_torque = self.middle_left_motor.get_torque(ml_volts, ml_vel)
-        mr_torque = self.middle_right_motor.get_torque(mr_volts, mr_vel)
+        fl_torque, fl_eff = self.front_left_motor.get_torque_and_efficiency(fl_volts, fl_vel)
+        bl_torque, bl_eff = self.back_left_motor.get_torque_and_efficiency(bl_volts, bl_vel)
+        fr_torque, fr_eff = self.front_right_motor.get_torque_and_efficiency(fr_volts, fr_vel)
+        br_torque, br_eff = self.back_right_motor.get_torque_and_efficiency(br_volts, br_vel)
+        ml_torque, ml_eff = self.middle_left_motor.get_torque_and_efficiency(ml_volts, ml_vel)
+        mr_torque, mr_eff = self.middle_right_motor.get_torque_and_efficiency(mr_volts, mr_vel)
         self._set_wheel_torque(fl_torque, fr_torque, ml_torque, mr_torque, bl_torque, br_torque)
 
     def get_pov_image(self):
