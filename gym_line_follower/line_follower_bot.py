@@ -305,12 +305,12 @@ class LineFollowerBot:
         mr_vel *= MOTOR_DIRECTIONS["right"]
         bl_vel *= MOTOR_DIRECTIONS["left"]
         br_vel *= MOTOR_DIRECTIONS["right"]
-        fl_torque, fl_eff = self.front_left_motor.get_torque_and_efficiency(fl_volts, fl_vel)
-        bl_torque, bl_eff = self.back_left_motor.get_torque_and_efficiency(bl_volts, bl_vel)
-        fr_torque, fr_eff = self.front_right_motor.get_torque_and_efficiency(fr_volts, fr_vel)
-        br_torque, br_eff = self.back_right_motor.get_torque_and_efficiency(br_volts, br_vel)
-        ml_torque, ml_eff = self.middle_left_motor.get_torque_and_efficiency(ml_volts, ml_vel)
-        mr_torque, mr_eff = self.middle_right_motor.get_torque_and_efficiency(mr_volts, mr_vel)
+        fl_torque, fl_pow_out, fl_pow_in = self.front_left_motor.get_torque_and_power(fl_volts, fl_vel)
+        bl_torque, bl_pow_out, bl_pow_in = self.back_left_motor.get_torque_and_power(bl_volts, bl_vel)
+        fr_torque, fr_pow_out, fr_pow_in = self.front_right_motor.get_torque_and_power(fr_volts, fr_vel)
+        br_torque, br_pow_out, br_pow_in = self.back_right_motor.get_torque_and_power(br_volts, br_vel)
+        ml_torque, ml_pow_out, ml_pow_in = self.middle_left_motor.get_torque_and_power(ml_volts, ml_vel)
+        mr_torque, mr_pow_out, mr_pow_in = self.middle_right_motor.get_torque_and_power(mr_volts, mr_vel)
         self._set_wheel_torque(fl_torque, fr_torque, ml_torque, mr_torque, bl_torque, br_torque)
 
     def get_pov_image(self):

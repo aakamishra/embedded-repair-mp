@@ -22,18 +22,18 @@ class DCMotor:
         # calculate motor constant and electrical resistance
         self.motor_constant, self.winding_resistance = self.get_motor_parameters()
 
-    def get_torque_and_efficiency(self, input_voltage, w):
+    def get_torque_and_power(self, input_voltage, w):
         """
-        Calculates the torque and efficiency of the DC Motor given an input voltage and rotation speed.
+        Calculates the torque, output power and input power of the DC Motor given 
+        an input voltage and rotation speed.
         :param input_voltage: [V]
         :param w: [rad/s]
         :param free_current: [A]
-        :return: tuple of: output_torque, power efficiency
+        :return: tuple of: output_torque, output power, input power
         """
         output_torque, load_current = self.get_torque_and_load_current(input_voltage, w)
         power_out, power_in = self.get_power_out_and_power_in(input_voltage, load_current, output_torque, w)
-        efficiency = power_out / power_in
-        return output_torque, efficiency
+        return output_torque, power_out, power_in
 
     def get_torque_and_load_current(self, input_voltage, w):
         """
