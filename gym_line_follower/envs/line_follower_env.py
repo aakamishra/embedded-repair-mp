@@ -163,7 +163,7 @@ class LineFollowerEnv(gym.Env):
         self.data = []
 
         if len(self.data) == 0:
-            pkl_file_path = '/Users/aakamishra/school/cs329m/embedded-repair-mp/data_list13.pkl'
+            pkl_file_path = '/Users/aakamishra/school/cs329m/embedded-repair-mp/data_list_6_wheels.pkl'
             if os.path.exists(pkl_file_path):
                 with open(pkl_file_path, 'rb') as file:
                     self.data = pickle.load(file)
@@ -326,7 +326,7 @@ class LineFollowerEnv(gym.Env):
             # self.time_step_array = new_type_array
 
         if self.step_counter % 100 == 0:
-            file_path = 'data_list13.pkl'  # Replace 'data_list.pickle' with your desired file path and name
+            file_path = 'data_list_6_wheels.pkl'  # Replace 'data_list.pickle' with your desired file path and name
             # Saving the list to a pickle file
             print("saved temp")
             with open(file_path, 'wb') as file:
