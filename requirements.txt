@@ -1,14 +1,14 @@
 absl-py==2.0.0
-appnope @ file:///opt/concourse/worker/volumes/live/4f734db2-9ca8-4d8b-5b29-6ca15b4b4772/volume/appnope_1606859466979/work
+appnope
 astor==0.8.1
 astunparse==1.6.3
-backcall @ file:///home/ktietz/src/ci/backcall_1611930011877/work
+backcall
 certifi==2020.6.20
 charset-normalizer==3.3.2
 cloudpickle==2.2.1
 cycler==0.11.0
-decorator @ file:///opt/conda/conda-bld/decorator_1643638310831/work
-entrypoints @ file:///opt/concourse/worker/volumes/live/194c0a28-55ce-4e83-6a87-0d9f2e06ab2c/volume/entrypoints_1649926487944/work
+decorator
+entrypoints
 fonttools==4.38.0
 gast==0.2.2
 google-pasta==0.2.0
@@ -18,14 +18,14 @@ gym-notices==0.0.8
 h5py==2.10.0
 idna==3.6
 importlib-metadata==6.7.0
-ipykernel @ file:///Users/runner/miniforge3/conda-bld/ipykernel_1620913246989/work/dist/ipykernel-5.5.5-py3-none-any.whl
-ipython @ file:///Users/runner/miniforge3/conda-bld/ipython_1651240787717/work
-ipython-genutils @ file:///tmp/build/80754af9/ipython_genutils_1606773439826/work
-jedi @ file:///opt/concourse/worker/volumes/live/c9d2fa99-8bc1-4572-41e7-6beba6391441/volume/jedi_1644315238822/work
+ipykernel
+ipython
+ipython-genutils
+jedi 
 Jinja2==3.1.2
 joblib==1.3.2
-jupyter-client==5.3.4
-jupyter-core==4.5.0
+jupyter-client
+jupyter-core
 Keras==2.3.1
 Keras-Applications==1.0.8
 Keras-Preprocessing==1.1.2
@@ -34,32 +34,32 @@ kiwisolver==1.4.5
 Markdown==3.4.4
 MarkupSafe==2.1.3
 matplotlib==3.5.3
-matplotlib-inline @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_9ddl71oqte/croots/recipe/matplotlib-inline_1662014471815/work
+matplotlib-inline
 mock==5.1.0
 networkx==2.6.3
 numpy==1.21.6
 opencv-python==4.8.1.78
 opt-einsum==3.3.0
 packaging==23.2
-parso @ file:///opt/conda/conda-bld/parso_1641458642106/work
-pexpect @ file:///tmp/build/80754af9/pexpect_1605563209008/work
-pickleshare @ file:///tmp/build/80754af9/pickleshare_1606932040724/work
+parso
+pexpect
+pickleshare
 Pillow==9.5.0
-prompt-toolkit @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_82emz7mook/croot/prompt-toolkit_1672387300396/work
+prompt-toolkit
 protobuf==3.20.0
 psutil==5.9.6
-ptyprocess @ file:///tmp/build/80754af9/ptyprocess_1609355006118/work/dist/ptyprocess-0.7.0-py2.py3-none-any.whl
+ptyprocess
 pybullet==3.2.5
-Pygments @ file:///opt/conda/conda-bld/pygments_1644249106324/work
+Pygments
 pyparsing==3.1.1
-python-dateutil @ file:///tmp/build/80754af9/python-dateutil_1626374649649/work
+python-dateutil
 PyYAML==6.0.1
-pyzmq @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_15f7a459-ad98-422b-b8da-cbf1f626e2115nt0ocwy/croots/recipe/pyzmq_1657724193704/work
+pyzmq 
 requests==2.31.0
 scikit-learn==1.0.2
 scipy==1.7.3
 Shapely==1.8.0
-six @ file:///tmp/build/80754af9/six_1644875935023/work
+six
 tensorboard==1.13.1
 tensorflow==1.13.1
 tensorflow-estimator==1.13.0
@@ -69,10 +69,10 @@ torch==1.13.1
 torch-geometric==2.3.1
 tornado==5.1.1
 tqdm==4.66.1
-traitlets @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_0dtilxc0bw/croot/traitlets_1671143889152/work
+traitlets
 typing_extensions==4.7.1
 urllib3==2.0.7
-wcwidth @ file:///Users/ktietz/demo/mc3/conda-bld/wcwidth_1629357192024/work
+wcwidth
 Werkzeug==2.2.3
 wrapt==1.16.0
 zipp==3.15.0
