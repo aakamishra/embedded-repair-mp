@@ -65,7 +65,7 @@ class LineFollowerEnv(gym.Env):
 
     def __init__(self, gui=True, nb_cam_pts=8, sub_steps=10, sim_time_step=1 / 250,
                  max_track_err=0.3, power_limit=0.4, max_time=60, config=None, randomize=True, obsv_type="points_latch",
-                 track=None, track_render_params=None, hardware_label=np.array([1., 1., 1., 0., 1., 0.])):
+                 track=None, track_render_params=None, hardware_label=np.array([1., 1., 1., 1.])):
         """
         Create environment.
         :param gui: True to enable pybullet OpenGL GUI
@@ -112,7 +112,7 @@ class LineFollowerEnv(gym.Env):
         self.track_render_params = track_render_params
         self.preset_track = track
 
-        self.action_space = spaces.Box(low=-1.0, high=1.0, shape=(6,), dtype=np.float32)
+        self.action_space = spaces.Box(low=-1.0, high=1.0, shape=(4,), dtype=np.float32)
 
         if self.obsv_type not in self.SUPPORTED_OBSV_TYPE:
             raise ValueError("Observation type '{}' not supported.".format(self.obsv_type))
@@ -162,16 +162,16 @@ class LineFollowerEnv(gym.Env):
 
         self.data = []
 
-        if len(self.data) == 0:
-            pkl_file_path = '/Users/aakamishra/school/cs329m/embedded-repair-mp/data_list13.pkl'
-            if os.path.exists(pkl_file_path):
-                with open(pkl_file_path, 'rb') as file:
-                    self.data = pickle.load(file)
-            else:
-                self.data = []
+        # if len(self.data) == 0:
+        #     pkl_file_path = '/Users/aakamishra/school/cs329m/embedded-repair-mp/data_list_four_wheels.pkl'
+        #     if os.path.exists(pkl_file_path):
+        #         with open(pkl_file_path, 'rb') as file:
+        #             self.data = pickle.load(file)
+        #     else:
+        #         self.data = []
 
-        filename = "/Users/aakamishra/school/cs329m/embedded-repair-mp/gym_line_follower/line_follower_bot.py"
-        self.adj_matrix, self.type_array, _, _ = get_adjacency_matrix_and_type_array(filename, verbose=False)
+        # filename = "/home/ec2-user/embedded-repair-mp/gym_line_follower/line_follower_bot.py"
+        # self.adj_matrix, self.type_array, _, _ = get_adjacency_matrix_and_type_array(filename, verbose=False)
 
         self.hardware_label = hardware_label
         # self.gnn_model = TemporalGCN(input_dim=11, hidden_dim=256, output_dim=6)
@@ -308,16 +308,16 @@ class LineFollowerEnv(gym.Env):
         
         #print(np.concatenate([np.zeros(6), self.follower_bot.hardware_node_array]), self.type_array[non_zero_indices])
         #print(len(np.concatenate([np.zeros(6), self.follower_bot.hardware_node_array])), len(self.type_array[non_zero_indices]))
-        new_type_array = deepcopy(self.type_array)
-        non_zero_indices = np.nonzero(new_type_array)[0]
-        new_type_array[non_zero_indices] = np.concatenate([np.zeros(6), self.follower_bot.hardware_node_array]) * new_type_array[non_zero_indices]
-        if self.time_step_array is None:
-            self.time_step_array = new_type_array
-        else:
-            self.time_step_array = np.vstack((self.time_step_array, new_type_array))
-        edge_index = adjacency_matrix_to_edge_index(self.adj_matrix)
-        if self.time_step_array.shape[0] == 50:
-            self.data.append((edge_index, self.time_step_array.T, self.follower_bot.hardware_label))
+        # new_type_array = deepcopy(self.type_array)
+        # non_zero_indices = np.nonzero(new_type_array)[0]
+        # new_type_array[non_zero_indices] = np.concatenate([np.zeros(6), self.follower_bot.hardware_node_array]) * new_type_array[non_zero_indices]
+        # if self.time_step_array is None:
+        #     self.time_step_array = new_type_array
+        # else:
+        #     self.time_step_array = np.vstack((self.time_step_array, new_type_array))
+        # edge_index = adjacency_matrix_to_edge_index(self.adj_matrix)
+        # if self.time_step_array.shape[0] == 50:
+        #     self.data.append((edge_index, self.time_step_array.T, self.follower_bot.hardware_label))
             # data = Data(x=torch.tensor(self.time_step_array.T, dtype=torch.float32), 
             #         edge_index=torch.tensor(np.vstack(edge_index)))
             # preds = self.gnn_model(data.x, data.edge_index, data.batch)
@@ -325,12 +325,12 @@ class LineFollowerEnv(gym.Env):
             # gen_robot_heatmap(100 - 100*preds.detach().numpy())
             # self.time_step_array = new_type_array
 
-        if self.step_counter % 100 == 0:
-            file_path = 'data_list13.pkl'  # Replace 'data_list.pickle' with your desired file path and name
-            # Saving the list to a pickle file
-            print("saved temp")
-            with open(file_path, 'wb') as file:
-                pickle.dump(self.data, file)
+        # if self.step_counter % 100 == 0:
+        #     file_path = 'data_list_four_wheels.pkl'  # Replace 'data_list.pickle' with your desired file path and name
+        #     # Saving the list to a pickle file
+        #     print("saved temp")
+        #     with open(file_path, 'wb') as file:
+        #         pickle.dump(self.data, file)
         return observation, reward, done, info
 
     def render(self, mode='human'):

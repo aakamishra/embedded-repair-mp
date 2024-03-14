@@ -63,7 +63,7 @@ def build_agent(env):
 def test(env, path):
     agent = build_agent(env)
     agent.load_weights(path)
-    agent.test(env, nb_episodes=2, visualize=False)
+    agent.test(env, nb_episodes=25, visualize=False)
 
 if __name__ == '__main__':
     # Use gym.make with custom arguments
@@ -72,15 +72,10 @@ if __name__ == '__main__':
         np.array([1.0, 0.9, 0.8, 0.9, 0.9, 0.8]),
         np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
         np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
-        np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
-        np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
-        np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
-        np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
-        np.array([0.9, 0.8, 1.0, 0.9, 0.9, 0.9]),
         np.array([1.0, 0.9, 0.8, 0.9, 0.9, 0.8]),
     ]
 
-    for _ in range(90):
+    for _ in range(45):
         random_sample = np.random.choice([1.0, 0.9, 0.8, 0.0], 6, p=[0.3, 0.3, 0.2, 0.2])
         all_labels.append(random_sample)
 
