@@ -13,11 +13,14 @@ import ast
 import numpy as np
 import scipy.linalg as linalg
 import pdb 
+import networkx as nx
+
 
 # Node Type Constants
 UNDEFINED_NODE = 0
 HARDWARE_INPUT_NODE = -1
 HARDWARE_OUTPUT_NODE = 1
+INTERACTION_NODE = 0.3
 
 def get_node_type(node):
     """
@@ -41,7 +44,18 @@ def get_node_type(node):
                 return HARDWARE_INPUT_NODE
             elif "set" in node.func.attr:
                 return HARDWARE_OUTPUT_NODE
-                
+        if 'motor' in node.func.value.attr:
+            print("here")
+            return INTERACTION_NODE
+        if 'action' in node.func.value.attr:
+            print("here")
+
+            return INTERACTION_NODE
+        if 'set' in node.func.value.attr:
+            print("here")
+
+            return INTERACTION_NODE
+
     return UNDEFINED_NODE
 
 
@@ -67,6 +81,13 @@ def get_node_to_index_dict(ast_tree: ast):
             index += 1
     
     return node_to_index
+
+
+def create_subgraph_for_multiple_edges(graph):
+    subgraph_nodes = [node for node, degree in graph.degree() if degree >= 1]
+    subgraph = graph.subgraph(subgraph_nodes)
+    return subgraph
+
 
 def build_adj_and_type(ast_tree: ast, node_to_index: dict):
     """
@@ -104,20 +125,20 @@ def build_adj_and_type(ast_tree: ast, node_to_index: dict):
         else:
             lineno_array[node_index] = 0
 
+        if node_type is not UNDEFINED_NODE:
+            adj_matrix[node_index][node_index] = 1
+            # Loop over all children nodes
+            for child in ast.iter_child_nodes(node):
 
-        # Loop over all children nodes
-        for child in ast.iter_child_nodes(node):
+                # Grab unique child node ID
+                child_index = node_to_index[child]
 
-            # Grab unique child node ID
-            child_index = node_to_index[child]
-
-            # Update appropriate edges in adjacency matrix
-            adj_matrix[node_index][child_index] = 1
-            adj_matrix[child_index][node_index] = 1
+                # Update appropriate edges in adjacency matrix
+                adj_matrix[node_index][child_index] = 1
+                adj_matrix[child_index][node_index] = 1
 
 
     return adj_matrix, type_array, lineno_array
-
 
 def get_adjacency_matrix_and_type_array(file_path: str, verbose: bool=False):
     """
@@ -146,20 +167,33 @@ def get_adjacency_matrix_and_type_array(file_path: str, verbose: bool=False):
 
     # Visualize AST, node_to_index dict, adjacecny matrix, and type array
     if verbose:
-        print("\n --- AST DUMP ---")
-        print(ast.dump(ast_tree))
 
-        print("\n --- NODE_TO_INDEX DICTIONARY ---")
-        for i in node_to_index.keys():
-            print("ID & Node Object: ", node_to_index[i], "\t", i)
+        # print("\n --- NODE_TO_INDEX DICTIONARY ---")
+        # for i in node_to_index.keys():
+        #     print("ID & Node Object: ", node_to_index[i], "\t", i)
 
         print("\n --- ADJACECNY MATRIX ---")
         print(adj_matrix)
         
         print("\n --- TYPE ARRAY ---")
         print(type_array)
+
+    # Initialize a graph from the adjacency matrix
+    G = nx.from_numpy_matrix(adj_matrix)
+
+    subgraph = create_subgraph_for_multiple_edges(G)
+
+    # Create a new mapping for nodes in the subgraph
+    new_mapping = {old_node: idx for idx, old_node in enumerate(subgraph.nodes)}
+
+    # Create a new adjacency matrix based on the subgraph
+    new_adjacency_matrix = nx.to_numpy_matrix(subgraph)
+    non_zero_indices = np.nonzero(type_array)[0]
+    new_indices = [new_mapping[ind] for ind in non_zero_indices]
+    nodes = np.zeros(len(new_adjacency_matrix))
+    nodes[new_indices] = type_array[non_zero_indices]
     
-    return adj_matrix, type_array, node_to_index, lineo_array
+    return new_adjacency_matrix, nodes, node_to_index, lineo_array
 
 def adjacency_matrix_to_edge_index(adj_matrix):
     edge_index = np.nonzero(adj_matrix)
@@ -175,4 +209,5 @@ if __name__ == "__main__":
     for i in range(len(type_array)):
         if type_array[i] != 0:
             print(lineo_array[i])
+
     pdb.set_trace()

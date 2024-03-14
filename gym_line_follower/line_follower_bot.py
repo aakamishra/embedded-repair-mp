@@ -336,3 +336,16 @@ class LineFollowerBot:
         rgb = np.array(rgb)
         rgb = rgb[:, :, :3]
         return rgb
+    
+    def update(self, action):
+        action = 10.0 * np.array(action)
+
+        self.apply_action(action)
+        self.pb_client.stepSimulation()
+
+        # Bot position updated here so it must be first!
+        observation = self.step(None)
+        action = self.create_action(action)
+    
+    def create_action(self, observation):
+        return np.ones(6)

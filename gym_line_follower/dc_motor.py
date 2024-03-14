@@ -20,7 +20,7 @@ class DCMotor:
         :param w: [rad/s
         :return: shaft torque [Nm]
         """
-        return (supply_voltage - w * self.constant) / self.resistance * self.constant
+        return self.state * (supply_voltage - w * self.constant) / self.resistance * self.constant
 
     @staticmethod
     def get_motor_parameters(nominal_voltage, no_load_speed, stall_torque):

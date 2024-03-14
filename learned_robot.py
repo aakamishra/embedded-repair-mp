@@ -14,6 +14,8 @@ from rl.random import OrnsteinUhlenbeckProcess
 from rl.memory import SequentialMemory
 from rl.callbacks import ModelIntervalCheckpoint
 import gym
+import numpy as np
+from tqdm import tqdm
 
 import gym_line_follower  # to register environment
 
@@ -61,8 +63,35 @@ def build_agent(env):
 def test(env, path):
     agent = build_agent(env)
     agent.load_weights(path)
-    agent.test(env, nb_episodes=10, visualize=False)
+    agent.test(env, nb_episodes=2, visualize=False)
 
 if __name__ == '__main__':
-    env = gym.make("LineFollower-v0")
-    test(env, "models/ddpg_2/last_weights.h5f")
+    # Use gym.make with custom arguments
+    all_labels = [
+        np.array([0.9, 0.8, 1.0, 0.9, 0.9, 0.9]),
+        np.array([1.0, 0.9, 0.8, 0.9, 0.9, 0.8]),
+        np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
+        np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
+        np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
+        np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
+        np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
+        np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
+        np.array([0.9, 0.8, 1.0, 0.9, 0.9, 0.9]),
+        np.array([1.0, 0.9, 0.8, 0.9, 0.9, 0.8]),
+    ]
+
+    for _ in range(90):
+        random_sample = np.random.choice([1.0, 0.9, 0.8, 0.0], 6, p=[0.3, 0.3, 0.2, 0.2])
+        all_labels.append(random_sample)
+
+
+
+    for label in tqdm(all_labels):
+        custom_env_args = {
+            'gui': False,
+            'hardware_label': label
+        }
+        env = gym.make("LineFollower-v0", **custom_env_args)
+        test(env, "models/ddpg_2/last_weights.h5f")
+
+    

@@ -22,7 +22,9 @@ from gym_line_follower.bullet_client import BulletClient
 from gym_line_follower.line_follower_bot import LineFollowerBot
 from gym_line_follower.randomizer_dict import RandomizerDict
 from gym_line_follower.ast_parser import get_adjacency_matrix_and_type_array, adjacency_matrix_to_edge_index
-from gym_line_follower.temp_gnn_file import TemporalGCN
+# from gym_line_follower.temp_gnn_file import TemporalGCN
+from copy import deepcopy
+
 
 def fig2rgb_array(fig):
     fig.canvas.draw()
@@ -47,6 +49,7 @@ def gen_robot_heatmap(preds):
     # Example vector of six points with values between 0 and 1 (replace this with your data)
     x = [100, 580, 100, 580, 100, 580]
     y = [150, 150, 400, 400, 630, 630]
+    preds = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
 
     # Display the heatmap superimposed on the image
     ax.scatter(x, y, c=preds, cmap="gist_rainbow", alpha=0.5, s=800) 
@@ -62,7 +65,7 @@ class LineFollowerEnv(gym.Env):
 
     def __init__(self, gui=True, nb_cam_pts=8, sub_steps=10, sim_time_step=1 / 250,
                  max_track_err=0.3, power_limit=0.4, max_time=60, config=None, randomize=True, obsv_type="points_latch",
-                 track=None, track_render_params=None, hardware_label=np.array([1., 0., 1., 1., 1., 0.])):
+                 track=None, track_render_params=None, hardware_label=np.array([1., 1., 1., 0., 1., 0.])):
         """
         Create environment.
         :param gui: True to enable pybullet OpenGL GUI
@@ -157,27 +160,34 @@ class LineFollowerEnv(gym.Env):
         self.seed()
         self.time_step_array = None
 
-        pkl_file_path = '/Users/aakamishra/school/cs329m/embedded-repair-mp/data_list1.pkl'
-        if os.path.exists(pkl_file_path):
-            with open(pkl_file_path, 'rb') as file:
-                self.data = pickle.load(file)
-        else:
-            self.data = []
-        self.hardware_label = hardware_label
-        self.gnn_model = TemporalGCN(input_dim=11, hidden_dim=256, output_dim=6)
-        # Path to your saved checkpoint
-        checkpoint_path = '/Users/aakamishra/school/cs329m/embedded-repair-mp/saved_gnn_models1/model_epoch_20.pt'  # Replace with your checkpoint path
-        # Check if the checkpoint file exists
-        if os.path.exists(checkpoint_path):
-            # Load the model checkpoint
-            checkpoint = torch.load(checkpoint_path)
+        self.data = []
 
-            # Load the model weights
-            self.gnn_model.load_state_dict(checkpoint)
-            print(f"Model loaded from checkpoint: {checkpoint_path}")
-        else:
-            print(f"Checkpoint file '{checkpoint_path}' does not exist.")
-        self.gnn_model.eval()
+        if len(self.data) == 0:
+            pkl_file_path = '/Users/aakamishra/school/cs329m/embedded-repair-mp/data_list13.pkl'
+            if os.path.exists(pkl_file_path):
+                with open(pkl_file_path, 'rb') as file:
+                    self.data = pickle.load(file)
+            else:
+                self.data = []
+
+        filename = "/Users/aakamishra/school/cs329m/embedded-repair-mp/gym_line_follower/line_follower_bot.py"
+        self.adj_matrix, self.type_array, _, _ = get_adjacency_matrix_and_type_array(filename, verbose=False)
+
+        self.hardware_label = hardware_label
+        # self.gnn_model = TemporalGCN(input_dim=11, hidden_dim=256, output_dim=6)
+        # # Path to your saved checkpoint
+        # checkpoint_path = '/Users/aakamishra/school/cs329m/embedded-repair-mp/saved_gnn_models1/model_epoch_20.pt'  # Replace with your checkpoint path
+        # # Check if the checkpoint file exists
+        # if os.path.exists(checkpoint_path):
+        #     # Load the model checkpoint
+        #     checkpoint = torch.load(checkpoint_path)
+
+        #     # Load the model weights
+        #     self.gnn_model.load_state_dict(checkpoint)
+        #     print(f"Model loaded from checkpoint: {checkpoint_path}")
+        # else:
+        #     print(f"Checkpoint file '{checkpoint_path}' does not exist.")
+        # self.gnn_model.eval()
 
 
 
@@ -295,29 +305,32 @@ class LineFollowerEnv(gym.Env):
         self.step_counter += 1
         self.done = done
         #print(self.follower_bot.hardware_node_array)
-        filename = "/Users/aakamishra/school/cs329m/embedded-repair-mp/gym_line_follower/line_follower_bot.py"
-        adj_matrix, type_array, _, _ = get_adjacency_matrix_and_type_array(filename, verbose=False)
-        non_zero_indices = np.nonzero(type_array)[0]
-        type_array[non_zero_indices] = self.follower_bot.hardware_node_array * type_array[non_zero_indices]
+        
+        #print(np.concatenate([np.zeros(6), self.follower_bot.hardware_node_array]), self.type_array[non_zero_indices])
+        #print(len(np.concatenate([np.zeros(6), self.follower_bot.hardware_node_array])), len(self.type_array[non_zero_indices]))
+        new_type_array = deepcopy(self.type_array)
+        non_zero_indices = np.nonzero(new_type_array)[0]
+        new_type_array[non_zero_indices] = np.concatenate([np.zeros(6), self.follower_bot.hardware_node_array]) * new_type_array[non_zero_indices]
         if self.time_step_array is None:
-            self.time_step_array = type_array
+            self.time_step_array = new_type_array
         else:
-            self.time_step_array = np.vstack((self.time_step_array, type_array))
-        edge_index = adjacency_matrix_to_edge_index(adj_matrix)
-        if self.time_step_array.shape[0] == 11:
-            #self.data.append((edge_index, self.time_step_array.T, self.follower_bot.hardware_label))
-            data = Data(x=torch.tensor(self.time_step_array.T, dtype=torch.float32), 
-                    edge_index=torch.tensor(np.vstack(edge_index)))
-            preds = self.gnn_model(data.x, data.edge_index, data.batch)
-            print("GNN Prediction", preds)
-            gen_robot_heatmap(100 - 100*preds.detach().numpy())
-            self.time_step_array = type_array
+            self.time_step_array = np.vstack((self.time_step_array, new_type_array))
+        edge_index = adjacency_matrix_to_edge_index(self.adj_matrix)
+        if self.time_step_array.shape[0] == 50:
+            self.data.append((edge_index, self.time_step_array.T, self.follower_bot.hardware_label))
+            # data = Data(x=torch.tensor(self.time_step_array.T, dtype=torch.float32), 
+            #         edge_index=torch.tensor(np.vstack(edge_index)))
+            # preds = self.gnn_model(data.x, data.edge_index, data.batch)
+            # print("GNN Prediction", preds)
+            # gen_robot_heatmap(100 - 100*preds.detach().numpy())
+            # self.time_step_array = new_type_array
 
-        # if self.step_counter % 100 == 0:
-        #     file_path = 'data_list1.pkl'  # Replace 'data_list.pickle' with your desired file path and name
-        #     # Saving the list to a pickle file
-        #     with open(file_path, 'wb') as file:
-        #         pickle.dump(self.data, file)
+        if self.step_counter % 100 == 0:
+            file_path = 'data_list13.pkl'  # Replace 'data_list.pickle' with your desired file path and name
+            # Saving the list to a pickle file
+            print("saved temp")
+            with open(file_path, 'wb') as file:
+                pickle.dump(self.data, file)
         return observation, reward, done, info
 
     def render(self, mode='human'):
