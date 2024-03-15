@@ -68,16 +68,16 @@ def test(env, path):
 if __name__ == '__main__':
     # Use gym.make with custom arguments
     all_labels = [
-        # np.array([0.9, 0.8, 1.0, 0.9, 0.9, 0.9]),
-        # np.array([1.0, 0.9, 0.8, 0.9, 0.9, 0.8]),
-        # np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
-        # np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
-        # np.array([1.0, 0.9, 0.8, 0.9, 0.9, 0.8]),
+        np.array([0.9, 0.8, 1.0, 0.9, 0.9, 0.9]),
+        np.array([1.0, 0.9, 0.8, 0.9, 0.9, 0.8]),
+        np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
+        np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
+        np.array([1.0, 0.9, 0.8, 0.9, 0.9, 0.8]),
     ]
 
-    for _ in range(25):
-        random_sample = np.random.choice([1.0, 0.9, 0.8, 0.0], 6, p=[0.25, 0.25, 0.2, 0.3])
-        all_labels.append(random_sample)
+    # for _ in range(25):
+    #     random_sample = np.random.choice([1.0, 0.9, 0.8, 0.0], 6, p=[0.25, 0.25, 0.2, 0.3])
+    #     all_labels.append(random_sample)
 
 
 

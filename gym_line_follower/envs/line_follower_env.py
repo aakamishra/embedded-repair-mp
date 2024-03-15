@@ -323,7 +323,7 @@ class LineFollowerEnv(gym.Env):
             # preds = self.gnn_model(data.x, data.edge_index, data.batch)
             # print("GNN Prediction", preds)
             # gen_robot_heatmap(100 - 100*preds.detach().numpy())
-            # self.time_step_array = new_type_array
+            self.time_step_array = new_type_array
 
         if self.step_counter % 100 == 0:
             file_path = 'data_list_6_wheels.pkl'  # Replace 'data_list.pickle' with your desired file path and name

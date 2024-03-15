@@ -58,7 +58,7 @@ if __name__ == "__main__":
         os.makedirs(save_path)
         
 
-    pkl_file_path = '/Users/aakamishra/school/cs329m/embedded-repair-mp/data_list13.pkl'
+    pkl_file_path = '/Users/aakamishra/school/cs329m/embedded-repair-mp/data_list_6_wheels.pkl'
     if os.path.exists(pkl_file_path):
         with open(pkl_file_path, 'rb') as file:
             data_list = pickle.load(file)
@@ -83,7 +83,7 @@ if __name__ == "__main__":
     # Initialize the model, loss function, and optimizer
     model = TemporalLSTMGCN(input_dim=50, hidden_dim=256, output_dim=6)
 
-    # Path to your saved checkpoint
+    #Path to your saved checkpoint
     checkpoint_path = 'saved_gnn_models1/model_epoch_70.pt'  # Replace with your checkpoint path
 
     # Check if the checkpoint file exists
