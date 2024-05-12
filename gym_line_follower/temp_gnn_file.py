@@ -27,9 +27,9 @@ class TemporalLSTMGCN(nn.Module):
     def forward(self, x, edge_index, batch):
         # Apply GCN layer
         x = self.conv1(x, edge_index)
-        x = F.elu(x)
+        x = F.relu(x)
         x = self.conv2(x, edge_index)
-        x = F.elu(x)
+        x = F.relu(x)
         # Perform global average pooling to aggregate node features
         x = global_mean_pool(x, batch)
         

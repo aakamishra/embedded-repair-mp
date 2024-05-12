@@ -83,7 +83,7 @@ if __name__ == '__main__':
 
     for label in tqdm(all_labels):
         custom_env_args = {
-            'gui': False,
+            'gui': True,
             'hardware_label': label
         }
         env = gym.make("LineFollower-v0", **custom_env_args)

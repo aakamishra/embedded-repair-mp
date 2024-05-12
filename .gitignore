@@ -1,0 +1,10 @@
+__pycache__/
+.__pycache__
+*.pyc
+.pyc
+logs/
+models/
+saved_dnn_models
+saved_gnn_models/
+saved_gnn_models1
+data_list*

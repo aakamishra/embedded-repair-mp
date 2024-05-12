@@ -55,7 +55,7 @@ def build_agent(env):
     random_process = OrnsteinUhlenbeckProcess(size=nb_actions, theta=.5, mu=0.5, sigma=0.5)
     agent = DDPGAgent(nb_actions=nb_actions, actor=actor, critic=critic, critic_action_input=action_input,
                       memory=memory, nb_steps_warmup_critic=80, nb_steps_warmup_actor=80,
-                      random_process=random_process, gamma=.99, target_model_update=1e-4)
+                      random_process=random_process, gamma=.99, target_model_update=1e-3)
     agent.compile(Adam(lr=.0001, clipnorm=1.), metrics=['mae'])
     return agent
 
@@ -89,12 +89,20 @@ def test(env, path):
 
 
 if __name__ == '__main__':
-    env = gym.make("LineFollower-v0", gui=False)
-    train(env, "ddpg_six_wheels_wf", steps=50000, pretrained_path="/Users/aakamishra/school/cs329m/embedded-repair-mp/models/ddpg_2/last_weights.h5f")
+    custom_env_args = {
+        'gui': False,
+        'hardware_label': np.ones(6),
+        'model_path': None, 
+        'data_collection_file': None,
+        'simulated_firmware_file':"/Users/aakamishra/school/cs329m/embedded-repair-mp/gym_line_follower/line_follower_bot_six_wheel_reference.py",
+        'urdf_file':'follower_bot.urdf',
+    }
+    env = gym.make("LineFollower-v0", **custom_env_args)
+    train(env, "ddpg_six_wheels_test", steps=200000, pretrained_path="/Users/aakamishra/school/cs329m/embedded-repair-mp/models/ddpg_six_wheels_wf/last_weights.h5f")
     rewards = []
     steps = []
     for i in range(50):
-        reward, step = test(env, "models/ddpg_six_wheels_wf/last_weights.h5f")
+        reward, step = test(env, "models/ddpg_six_wheels_test/last_weights.h5f")
         rewards.append(reward)
         steps.append(step)
     print(np.mean(rewards), np.mean(steps))
