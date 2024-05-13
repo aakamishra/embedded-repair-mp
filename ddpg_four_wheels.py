@@ -99,7 +99,7 @@ if __name__ == '__main__':
         'urdf_file':'four_wheel_robot.urdf',
     }
     env = gym.make("LineFollower-v0", **custom_env_args)
-    train(env, "ddpg_four_wheels_test", steps=200000, pretrained_path=None)
+    train(env, "ddpg_four_wheels_test", steps=120000, pretrained_path="/Users/aakamishra/school/cs329m/embedded-repair-mp/models/ddpg_four_wheels_test/checkpoints/chkpt_80000.h5f")
     rewards = []
     steps = []
     for i in range(50):
