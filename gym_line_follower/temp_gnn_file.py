@@ -53,16 +53,15 @@ class TemporalLSTMGCN(nn.Module):
 
 if __name__ == "__main__":
     # Define the path to save the model weights
-    save_path = 'saved_gnn_models1/'
+    save_path = 'saved_gnn_models3/'
     if not os.path.exists(save_path):
         os.makedirs(save_path)
         
 
-    pkl_file_path = '/Users/aakamishra/school/cs329m/embedded-repair-mp/data_list13.pkl'
+    pkl_file_path = '/home/ec2-user/embedded-repair-mp/data_list_four_wheels.pkl'
     if os.path.exists(pkl_file_path):
         with open(pkl_file_path, 'rb') as file:
             data_list = pickle.load(file)
-    print(data_list)
     # Organize data into batches
     torch_data_list = []
     for i in range(0, len(data_list)):
@@ -81,24 +80,24 @@ if __name__ == "__main__":
     loader = DataLoader(torch_data_list, batch_size=batch_size, shuffle=True, follow_batch=False)
 
     # Initialize the model, loss function, and optimizer
-    model = TemporalLSTMGCN(input_dim=50, hidden_dim=256, output_dim=6)
+    model = TemporalLSTMGCN(input_dim=50, hidden_dim=256, output_dim=4).to("cuda")
 
     # Path to your saved checkpoint
-    checkpoint_path = 'saved_gnn_models1/model_epoch_70.pt'  # Replace with your checkpoint path
+    # checkpoint_path = 'saved_gnn_models1/model_epoch_70.pt'  # Replace with your checkpoint path
 
-    # Check if the checkpoint file exists
-    if os.path.exists(checkpoint_path):
-        # Load the model checkpoint
-        checkpoint = torch.load(checkpoint_path)
+    # # Check if the checkpoint file exists
+    # if os.path.exists(checkpoint_path):
+    #     # Load the model checkpoint
+    #     checkpoint = torch.load(checkpoint_path)
 
-        # Load the model weights
-        model.load_state_dict(checkpoint)
-        print(f"Model loaded from checkpoint: {checkpoint_path}")
-    else:
-        print(f"Checkpoint file '{checkpoint_path}' does not exist.")
+    #     # Load the model weights
+    #     model.load_state_dict(checkpoint)
+    #     print(f"Model loaded from checkpoint: {checkpoint_path}")
+    # else:
+    #     print(f"Checkpoint file '{checkpoint_path}' does not exist.")
 
     criterion = torch.nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.0001)
+    optimizer = optim.Adam(model.parameters(), lr=0.0005)
     random.seed(109)
     # Training loop
     num_epochs = 100
@@ -108,7 +107,7 @@ if __name__ == "__main__":
         loss = 0
         random.shuffle(torch_data_list)
         for i in tqdm(range(len(torch_data_list))):
-            data_point = torch_data_list[i]
+            data_point = torch_data_list[i].to("cuda")
             out = model(data_point.x, data_point.edge_index, data_point.batch)
             label = data_point.y
             # if (i + 1) % 128 == 0:
