@@ -89,20 +89,31 @@ def test(env, path):
 
 
 if __name__ == '__main__':
+    # custom_env_args = {
+    #     'gui': False,
+    #     'hardware_label': np.ones(6),
+    #     'model_path': None, 
+    #     'data_collection_file': None,
+    #     'simulated_firmware_file':"/Users/aakamishra/school/cs329m/embedded-repair-mp/gym_line_follower/line_follower_bot_six_wheel_reference.py",
+    #     'urdf_file':'follower_bot.urdf',
+    # }
     custom_env_args = {
-        'gui': False,
-        'hardware_label': np.ones(6),
-        'model_path': None, 
-        'data_collection_file': None,
-        'simulated_firmware_file':"/Users/aakamishra/school/cs329m/embedded-repair-mp/gym_line_follower/line_follower_bot_six_wheel_reference.py",
-        'urdf_file':'follower_bot.urdf',
+            'gui': False,
+            'hardware_label': np.ones(6),
+            'model_path': None, 
+            'data_collection_file': None,
+            'simulated_firmware_file':"/Users/aakamishra/school/cs329m/embedded-repair-mp/gym_line_follower/line_follower_bot_six_wheel_reference.py",
+            'urdf_file':'follower_bot.urdf',
+            'model_path':'/Users/aakamishra/school/cs329m/embedded-repair-mp/saved_gnn_models1/model_epoch_100.pt',
+            'use_gnn': True,
+            'create_label':True,
     }
     env = gym.make("LineFollower-v0", **custom_env_args)
-    train(env, "ddpg_six_wheels_test", steps=200000, pretrained_path="/Users/aakamishra/school/cs329m/embedded-repair-mp/models/ddpg_six_wheels_wf/last_weights.h5f")
+    train(env, "ddpg_six_wheels_test_w_gnn", steps=200000)
     rewards = []
     steps = []
     for i in range(50):
-        reward, step = test(env, "models/ddpg_six_wheels_test/last_weights.h5f")
+        reward, step = test(env, "models/ddpg_six_wheels_test_w_gnn/last_weights.h5f")
         rewards.append(reward)
         steps.append(step)
     print(np.mean(rewards), np.mean(steps))

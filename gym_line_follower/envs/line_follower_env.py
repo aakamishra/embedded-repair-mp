@@ -82,7 +82,9 @@ class LineFollowerEnv(gym.Env):
                 model_path='/Users/aakamishra/school/cs329m/embedded-repair-mp/saved_gnn_models1/model_epoch_100.pt',
                 simulated_firmware_file="/Users/aakamishra/school/cs329m/embedded-repair-mp/gym_line_follower/line_follower_bot_six_wheel_reference.py",
                 data_collection_file=None, #'/home/ec2-user/embedded-repair-mp/data_list_four_wheels.pkl'
-                urdf_file='follower_bot.urdf'
+                urdf_file='follower_bot.urdf',
+                use_gnn=False,
+                create_label=False,
                 ):
         """
         Create environment.
@@ -117,7 +119,8 @@ class LineFollowerEnv(gym.Env):
             self.config = config
         
         # TODO make sure to comment this out
-        # hardware_label = np.random.choice([1.0, 0.9, 0.8, 0.0], self.number_of_wheels, p=[0.4, 0.4, 0.05, 0.15])
+        if create_label:
+            hardware_label = np.random.choice([1.0, 0.9, 0.8, 0.0], number_of_wheels, p=[0.4, 0.4, 0.05, 0.15])
         self.gui = gui
         self.nb_cam_pts = nb_cam_pts
         self.sub_steps = sub_steps
@@ -126,6 +129,7 @@ class LineFollowerEnv(gym.Env):
         self.speed_limit = power_limit
         self.max_time = max_time
         self.max_steps = max_time / (sim_time_step * sub_steps)
+        self.use_gnn = use_gnn
 
         self.randomize = randomize
         self.obsv_type = obsv_type.lower()
@@ -143,13 +147,18 @@ class LineFollowerEnv(gym.Env):
                                                 high=np.array([0.3, 0.2, 1.] * self.nb_cam_pts),
                                                 dtype=np.float32)
         elif self.obsv_type == "points_latch":
-            # low = [0.0, -0.2] * self.nb_cam_pts
-            # low = low + [1]*6
-            # high = [0.3, 0.2] * self.nb_cam_pts
-            # high = high + [1]*6
-            self.observation_space = spaces.Box(low=np.array([0.0, -0.2] * self.nb_cam_pts),
-                                                high=np.array([0.3, 0.2] * self.nb_cam_pts),
-                                                dtype=np.float32)
+            if use_gnn and model_path:
+                low = [0.0, -0.2] * self.nb_cam_pts
+                low = low + [0]*self.number_of_wheels
+                high = [0.3, 0.2] * self.nb_cam_pts
+                high = high + [1]*self.number_of_wheels
+                self.observation_space = spaces.Box(low=np.array(low),
+                                                    high=np.array(high),
+                                                    dtype=np.float32)
+            else:
+                self.observation_space = spaces.Box(low=np.array([0.0, -0.2] * self.nb_cam_pts),
+                                                    high=np.array([0.3, 0.2] * self.nb_cam_pts),
+                                                    dtype=np.float32)
             
         elif self.obsv_type == "points_latch_bool":
             low = [0.0, -0.2] * self.nb_cam_pts
@@ -270,8 +279,9 @@ class LineFollowerEnv(gym.Env):
             obsv = self.follower_bot.step(self.track)
             if self.obsv_type == "latch_bool":
                 obsv = [obsv, 1.]
-            # if self.obsv_type == "points_latch":
-            #     obsv = np.array([0.0, 0.0] * self.nb_cam_pts + [1]*6)
+            
+            if self.obsv_type == "points_latch" and self.use_gnn:
+                obsv = np.array([0.0, 0.0] * self.nb_cam_pts + [1]*self.number_of_wheels)
             return obsv
 
     def step(self, action):
@@ -296,7 +306,10 @@ class LineFollowerEnv(gym.Env):
             if len(observation) == 0:
                 observation = np.array(self.observation)
             else:
-                self.observation = np.array(observation)
+                if self.use_gnn:
+                    self.observation = np.concatenate((observation, self.preds))
+                else:
+                    self.observation = np.array(observation)
                 observation = self.observation
 
         elif self.obsv_type == "points_latch_bool":
